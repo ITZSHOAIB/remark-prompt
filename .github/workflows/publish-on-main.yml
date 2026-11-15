@@ -1,0 +1,69 @@
+name: Publish
+on:
+  push:
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+
+# Queue release runs instead of cancelling one midway through a publish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    name: Checks
+    uses: ./.github/workflows/pre-checks.yml
+
+  publish:
+    name: Publish
+    needs: checks
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      id-token: write
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          # No dependency cache in the publishing job, so a poisoned cache
+          # can't reach the OIDC token.
+          package-manager-cache: false
+
+      - name: Install npm 11+ (required for Trusted Publishing)
+        run: npm install -g npm@12.0.2
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@ae32849d5ba541f9ae29e40e22a623bc13562f51 # v2.1.2
+        with:
+          publish-script: pnpm changeset:publish
+        env:
+          # Read by @changesets/changelog-github to link PRs and authors.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"
+
+      # Workflows don't start for a pull request that GITHUB_TOKEN opened or
+      # updated, so the release PR would never report "Checks / Required".
+      - name: Run checks on the release pull request
+        if: steps.changesets.outputs.pr-number != ''
+        run: gh workflow run pull-request.yml --ref changeset-release/main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

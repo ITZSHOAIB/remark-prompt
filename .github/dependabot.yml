@@ -1,0 +1,28 @@
+version: 2
+
+# All updates, npm and GitHub Actions, arrive as one monthly pull request.
+multi-ecosystem-groups:
+  dependencies:
+    schedule:
+      interval: "monthly"
+
+updates:
+  - package-ecosystem: "github-actions"
+    # The composite action isn't scanned unless its directory is listed.
+    directories:
+      - "/"
+      - "/.github/actions/*"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    patterns: ["*"]
+    multi-ecosystem-group: "dependencies"
+    # Matches minimumReleaseAge in pnpm-workspace.yaml (4320 minutes)
+    cooldown:
+      default-days: 3
+    ignore:
+      # Types track the oldest supported Node.js (engines.node), not the newest.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]

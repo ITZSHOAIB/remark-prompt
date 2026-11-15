@@ -1,0 +1,139 @@
+{
+  "name": "remark-prompt",
+  "version": "0.0.0",
+  "description": "Prompt blocks for Markdown and MDX docs: copy a prompt or open it in Claude, ChatGPT or Cursor. Real elements, no raw HTML, works on Docusaurus, Fumadocs, Starlight, Nextra and Rspress.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./satteri": {
+      "types": "./dist/satteri.d.ts",
+      "default": "./dist/satteri.js"
+    },
+    "./astro": {
+      "types": "./dist/astro.d.ts",
+      "default": "./dist/astro.js"
+    },
+    "./docusaurus": {
+      "types": "./dist/docusaurus.d.cts",
+      "default": "./dist/docusaurus.cjs"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "sideEffects": [
+    "./dist/client.js",
+    "./dist/styles.css"
+  ],
+  "scripts": {
+    "build": "pnpm clean && tsc && node scripts/copyAssets.mjs",
+    "clean": "rimraf dist",
+    "format": "biome format --write",
+    "lint": "biome check",
+    "lint:fix": "biome check --write",
+    "lint:staged": "lint-staged",
+    "changeset": "changeset",
+    "changeset:version": "changeset version",
+    "changeset:publish": "pnpm build && changeset publish",
+    "release:check": "node scripts/checkReleasePlan.mjs",
+    "prepare": "npx simple-git-hooks",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest run --coverage",
+    "test:package": "pnpm build && node scripts/checkPackage.mjs",
+    "audit": "pnpm audit --audit-level low",
+    "audit:prod": "pnpm audit --prod --audit-level low"
+  },
+  "dependencies": {
+    "@types/mdast": "^4.0.4",
+    "mdast-util-from-markdown": "^2.0.2",
+    "mdast-util-gfm": "^3.1.0",
+    "micromark-extension-gfm": "^3.0.0",
+    "unist-util-visit": "^5.1.0"
+  },
+  "peerDependencies": {
+    "satteri": ">=0.11.7 <0.12.0"
+  },
+  "peerDependenciesMeta": {
+    "satteri": {
+      "optional": true
+    }
+  },
+  "keywords": [
+    "remark",
+    "remark-plugin",
+    "unified",
+    "mdx",
+    "markdown",
+    "prompt",
+    "ai",
+    "llm",
+    "claude",
+    "chatgpt",
+    "cursor",
+    "docusaurus",
+    "fumadocs",
+    "starlight",
+    "astro",
+    "nextra",
+    "rspress",
+    "satteri",
+    "documentation"
+  ],
+  "author": "Sohab Sk",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ITZSHOAIB/remark-prompt.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ITZSHOAIB/remark-prompt/issues"
+  },
+  "homepage": "https://github.com/ITZSHOAIB/remark-prompt#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "lint-staged": {
+    "*": [
+      "biome check --write --no-errors-on-unmatched"
+    ]
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm typecheck && pnpm test:coverage && pnpm lint:staged"
+  },
+  "packageManager": "pnpm@10.34.5",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.7",
+    "@changesets/changelog-github": "1.0.1",
+    "@changesets/cli": "3.0.3",
+    "@changesets/get-release-plan": "5.0.2",
+    "@mdx-js/mdx": "^3.1.1",
+    "@types/node": "22.20.5",
+    "@vitest/coverage-v8": "5.1.0",
+    "lint-staged": "17.6.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-directive": "^4.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "rimraf": "^6.1.4",
+    "satteri": "0.11.7",
+    "simple-git-hooks": "^2.14.0",
+    "typescript": "7.0.2",
+    "unified": "^11.0.5",
+    "vite": "^8.3.8",
+    "vitest": "5.1.0"
+  }
+}
