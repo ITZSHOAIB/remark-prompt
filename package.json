@@ -1,6 +1,6 @@
 {
   "name": "remark-prompt",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Prompt blocks for Markdown and MDX docs: copy a prompt or open it in Claude, ChatGPT or Cursor. Real elements, no raw HTML, works on Docusaurus, Fumadocs, Starlight, Nextra and Rspress.",
   "type": "module",
   "exports": {
