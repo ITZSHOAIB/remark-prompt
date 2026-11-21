@@ -1,4 +1,4 @@
-# PRD: remark-prompt 0.1.0
+# PRD: remark-prompt 0.2.0
 
 Terms follow [GLOSSARY.md](../GLOSSARY.md). Decisions with lasting trade-offs are in [docs/adr](./adr).
 
@@ -13,7 +13,7 @@ The only package that tries to fill the gap, Mirrordown's `remd-prompt`, emits r
 - **Docs authors** on any remark- or Sätteri-based host who want readers to copy a prompt, or open it in an AI service, without building a component.
 - **Readers**, who need to see exactly what they're sending, copy it reliably, and not be tricked by invisible characters.
 
-## Goals for 0.1.0
+## Goals for 0.2.0
 
 1. A prompt block works on Docusaurus, Starlight (Sätteri and unified), Fumadocs, Nextra (webpack) and Rspress with a documented setup. The first three are tested in CI against real fixtures.
 2. Any prompt text works in a fence on every host, including inside MDX.
@@ -69,7 +69,7 @@ The only package that tries to fill the gap, Mirrordown's `remd-prompt`, emits r
 - [ ] The repo has AGENTS.md, CONTRIBUTING.md, issue and PR templates, GLOSSARY.md and ADRs.
 - [ ] A live demo runs at `remark-prompt.sohab.dev`, built from the same output the e2e tests run against.
 - [ ] Nextra (webpack) and Rspress pass a manual check against the release candidate.
-- [ ] The repo is public, `Checks / Required` is enforced by a ruleset, and every release after 0.1.0 is published through OIDC trusted publishing with provenance.
+- [ ] The repo is public, `Checks / Required` is enforced by a ruleset, and every release from 0.2.0 on is published through OIDC trusted publishing with provenance.
 
 ## Success after launch
 
