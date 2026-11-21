@@ -3,6 +3,7 @@ import { fromMarkdown } from "mdast-util-from-markdown";
 import { gfmFromMarkdown } from "mdast-util-gfm";
 import { gfm } from "micromark-extension-gfm";
 import { visit } from "unist-util-visit";
+import { classes } from "./core/contract.js";
 
 /** Where "Open in …" sends the prompt: a GET form to `action` with the prompt in `field`. */
 export const services = {
@@ -122,45 +123,35 @@ export const buildPrompt = (
       name: `${id}-view`,
       id: `${id}-${name}`,
       value: name,
-      className: ["remark-prompt-view", `remark-prompt-view-${name}`],
+      className: [classes.view, `${classes.view}-${name}`],
     }),
     el("label", { htmlFor: `${id}-${name}` }, [text(label)]),
   ];
 
-  return el("div", { className: ["remark-prompt"], id, dataPrompt: value }, [
-    el(
-      "details",
-      { className: ["remark-prompt-details"], open: open || undefined },
-      [
-        el("summary", { className: ["remark-prompt-title"] }, [
-          text(title ?? t.title),
+  return el("div", { className: [classes.root], id, dataPrompt: value }, [
+    el("details", { className: [classes.details], open: open || undefined }, [
+      el("summary", { className: [classes.title] }, [text(title ?? t.title)]),
+      el("div", { className: [classes.body] }, [
+        // No `checked`: the preview shows by default through CSS, so
+        // React-rendered sites never see a controlled input.
+        el(
+          "div",
+          {
+            className: [classes.views],
+            role: "radiogroup",
+            ariaLabel: "View",
+          },
+          [...view("preview", t.preview), ...view("markdown", t.markdown)],
+        ),
+        el("div", { className: [classes.preview] }, parsePreview(value)),
+        // A plain code block, so the site's own highlighter renders it.
+        el("div", { className: [classes.source] }, [
+          { type: "code", lang: "markdown", meta: null, value },
         ]),
-        el("div", { className: ["remark-prompt-body"] }, [
-          // No `checked`: the preview shows by default through CSS, so
-          // React-rendered sites never see a controlled input.
-          el(
-            "div",
-            {
-              className: ["remark-prompt-views"],
-              role: "radiogroup",
-              ariaLabel: "View",
-            },
-            [...view("preview", t.preview), ...view("markdown", t.markdown)],
-          ),
-          el(
-            "div",
-            { className: ["remark-prompt-preview"] },
-            parsePreview(value),
-          ),
-          // A plain code block, so the site's own highlighter renders it.
-          el("div", { className: ["remark-prompt-source"] }, [
-            { type: "code", lang: "markdown", meta: null, value },
-          ]),
-        ]),
-      ],
-    ),
-    el("div", { className: ["remark-prompt-actions"] }, [
-      el("button", { type: "button", className: ["remark-prompt-copy"] }, [
+      ]),
+    ]),
+    el("div", { className: [classes.actions] }, [
+      el("button", { type: "button", className: [classes.copy] }, [
         text(t.copy),
       ]),
       ...offered.map((key) => {
@@ -168,7 +159,7 @@ export const buildPrompt = (
         return el(
           "form",
           {
-            className: ["remark-prompt-service"],
+            className: [classes.service],
             action: service.action,
             method: "get",
             target: "_blank",

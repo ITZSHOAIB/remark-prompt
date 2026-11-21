@@ -43,3 +43,33 @@ const decode = (value: string) =>
     .replaceAll("&gt;", ">")
     .replaceAll("&quot;", '"')
     .replaceAll("&amp;", "&");
+
+const token = /<\/?[a-z][^\s/>]*(?:"[^"]*"|'[^']*'|[^>"'])*>|[^<]+|</g;
+const voidTag = /^<(input|br|hr|img)\b/;
+
+/**
+ * One tag per line, indented by depth, so snapshots read and diff well.
+ * Text stays on its parent's line and is never reindented.
+ */
+export const pretty = (html: string) => {
+  const lines: string[] = [];
+  let depth = 0;
+  let inline = false; // the last line is an open tag followed by its text
+  for (const part of html.match(token) ?? []) {
+    if (!part.startsWith("<") || part === "<") {
+      if (!part.trim() && !inline) continue;
+      lines[lines.length - 1] += part;
+      inline = true;
+    } else if (part.startsWith("</")) {
+      depth = Math.max(0, depth - 1);
+      if (inline) lines[lines.length - 1] += part;
+      else lines.push(`${"  ".repeat(depth)}${part}`);
+      inline = false;
+    } else {
+      lines.push(`${"  ".repeat(depth)}${part}`);
+      if (!voidTag.test(part)) depth++;
+      inline = false;
+    }
+  }
+  return lines.join("\n");
+};
