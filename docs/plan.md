@@ -1,8 +1,8 @@
-﻿# Roadmap: remark-prompt 0.1.0
+﻿# Roadmap: remark-prompt 0.2.0
 
 Implementation scope, acceptance criteria and slice sequencing live in the GitHub epics below. This file is the navigation map; keep execution details in the issues.
 
-All eight epics are triaged in GitHub with `epic`, `triaged`, a priority label, and milestone `0.1.0`. Priority means: **P0** is foundational work that blocks the delivery path; **P1** is a high-priority release gate or core capability; **P2** is required 0.1.0 work that follows a prerequisite. Native blocked-by links are the cross-epic source of truth; the issue body contains slice dependencies and acceptance checks.
+All eight epics are triaged in GitHub with `epic`, `triaged`, a priority label, and milestone `0.2.0`. Priority means: **P0** is foundational work that blocks the delivery path; **P1** is a high-priority release gate or core capability; **P2** is required 0.2.0 work that follows a prerequisite. Native blocked-by links are the cross-epic source of truth; the issue body contains slice dependencies and acceptance checks.
 
 ## Wave 1 · Foundations
 
