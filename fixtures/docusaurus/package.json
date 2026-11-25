@@ -1,0 +1,16 @@
+{
+  "name": "@remark-prompt/fixture-docusaurus",
+  "private": true,
+  "scripts": {
+    "build": "node ../prepare.mjs docusaurus && docusaurus build"
+  },
+  "dependencies": {
+    "@docusaurus/core": "3.10.2",
+    "@docusaurus/preset-classic": "3.10.2",
+    "@mdx-js/react": "3.1.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remark-prompt": "workspace:*",
+    "search-insights": "2.17.3"
+  }
+}
