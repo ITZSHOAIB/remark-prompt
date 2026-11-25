@@ -1,0 +1,25 @@
+{
+  "name": "@remark-prompt/fixture-fumadocs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node ../prepare.mjs fumadocs && next build --webpack"
+  },
+  "dependencies": {
+    "fumadocs-core": "16.19.7",
+    "fumadocs-mdx": "15.6.4",
+    "fumadocs-ui": "16.19.7",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "remark-directive": "4.0.0",
+    "remark-prompt": "workspace:*"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.5",
+    "@types/mdx": "2.0.14",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tailwindcss": "4.3.5"
+  }
+}

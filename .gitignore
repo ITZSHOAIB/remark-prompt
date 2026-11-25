@@ -2,3 +2,12 @@ node_modules
 dist
 coverage
 *.tgz
+fixtures/docusaurus/.docusaurus/
+fixtures/docusaurus/build/
+fixtures/docusaurus/docs/
+fixtures/starlight/.astro/
+fixtures/starlight/src/content/docs/
+fixtures/fumadocs/.next/
+fixtures/fumadocs/.source/
+fixtures/fumadocs/content/docs/
+fixtures/fumadocs/out/

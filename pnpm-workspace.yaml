@@ -1,7 +1,18 @@
+packages:
+  - fixtures/*
+
 minimumReleaseAge: 4320
 blockExoticSubdeps: true
 strictDepBuilds: true
 
+# Keep the Docusaurus fixture within the workspace's dependency audit policy.
+overrides:
+  "@docusaurus/core>tinypool": 2.1.2
+  "copy-webpack-plugin>serialize-javascript": 7.1.4
+  "css-minimizer-webpack-plugin>serialize-javascript": 7.1.4
+  "sockjs>uuid": 11.1.1
+
 allowBuilds:
+  core-js: false
   esbuild: true
   simple-git-hooks: false

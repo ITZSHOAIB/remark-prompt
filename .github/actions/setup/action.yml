@@ -5,9 +5,9 @@ inputs:
   node-version:
     description: Node.js version to install.
     default: "24"
-  install-args:
-    description: Extra arguments for pnpm install, such as a workspace filter.
-    default: ""
+  workspace-filter:
+    description: Workspace packages pnpm should install.
+    default: "."
 
 runs:
   using: composite
@@ -23,4 +23,6 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: pnpm ${{ inputs.install-args }} install --frozen-lockfile
+      env:
+        INSTALL_FILTER: ${{ inputs.workspace-filter }}
+      run: pnpm --filter "$INSTALL_FILTER" install --frozen-lockfile

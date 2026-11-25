@@ -1,0 +1,31 @@
+---
+title: Prompt fences
+description: Shared MDX examples for remark-prompt.
+---
+
+## Literal MDX-sensitive text
+
+```prompt title="Literal placeholders" open claude cursor
+Add an example for <NAME> with the value {var}.
+
+- Keep the variable literal.
+- Include **Markdown** in the preview.
+```
+
+## Invisible character
+
+```prompt title="Invisible character"
+Keep the zero-width space: before​after.
+```
+
+## Long prompt
+
+```prompt title="Long prompt" claude
+{{LONG_PROMPT}}
+```
+
+## Custom service ID
+
+```prompt title="Custom service ID" fixture-custom
+Send this to the fixture's custom service when it is configured.
+```

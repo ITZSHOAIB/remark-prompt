@@ -51,6 +51,7 @@
     "test:watch": "vitest --watch",
     "test:coverage": "vitest run --coverage",
     "test:package": "pnpm build && node scripts/checkPackage.mjs",
+    "test:fixtures": "pnpm build && pnpm --filter \"@remark-prompt/fixture-*\" run build && node fixtures/check.mjs",
     "audit": "pnpm audit --audit-level low",
     "audit:prod": "pnpm audit --prod --audit-level low"
   },
