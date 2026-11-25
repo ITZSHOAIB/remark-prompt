@@ -1,3 +1,21 @@
+import type { Parent } from "mdast";
+
+/** An mdast node rendered as a real element through `data.hName`. */
+export interface PromptElement extends Parent {
+  type: "promptElement";
+  data: { hName: string; hProperties: Record<string, unknown> };
+}
+
+declare module "mdast" {
+  interface BlockContentMap {
+    promptElement: PromptElement;
+  }
+
+  interface RootContentMap {
+    promptElement: PromptElement;
+  }
+}
+
 /**
  * The markup contract. The stylesheet, the browser client and user CSS
  * overrides all depend on these names, so changing one is a semver change.
