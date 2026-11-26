@@ -49,6 +49,8 @@ export const classes = { ...styledClasses, ...hookClasses } as const;
 export const attributes = {
   /** On the root: the prompt text, stored once. */
   prompt: "data-prompt",
+  /** On a copy-and-open button: copy the prompt, then open this URL. */
+  openUrl: "data-open-url",
   /** On the copy button while "copied" shows. */
   copied: "data-copied",
   /** On the copy button after the clipboard refused. */

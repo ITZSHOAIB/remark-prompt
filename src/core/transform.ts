@@ -1,7 +1,12 @@
 import type { Code, Node } from "mdast";
 import type { PromptElement } from "./contract.js";
 import { buildPrompt, type Labels } from "./render.js";
-import type { ServiceId } from "./services.js";
+import {
+  createRegistry,
+  type ResolvedService,
+  type ServiceDefinition,
+  type ServiceId,
+} from "./services.js";
 import {
   type DirectiveLike,
   type PromptMeta,
@@ -12,6 +17,8 @@ import {
 export interface RemarkPromptOptions {
   /** Services offered when a prompt names none. Default `["claude", "chatgpt"]`. */
   services?: ServiceId[];
+  /** Add services, or replace presets, by id. `{prompt}` marks where the prompt goes. */
+  customServices?: Record<string, ServiceDefinition>;
   /** UI strings, for translated sites. */
   labels?: Partial<Labels>;
 }
@@ -43,22 +50,31 @@ interface FileTransform {
 export function createTransform(
   options: RemarkPromptOptions,
 ): () => FileTransform {
-  const defaults: ServiceId[] = options.services ?? ["claude", "chatgpt"];
+  const registry = createRegistry(options.customServices);
+  const lookup = (id: string): ResolvedService => {
+    const service = registry.get(id);
+    if (!service)
+      throw new Error(`remark-prompt: services: unknown service "${id}".`);
+    return service;
+  };
+  const defaults = (options.services ?? ["claude", "chatgpt"]).map(lookup);
   const labels = { ...defaultLabels, ...options.labels };
 
   return () => {
     let count = 0;
 
-    const render = (value: string, meta: PromptMeta) =>
-      buildPrompt(
+    const render = (value: string, meta: PromptMeta) => {
+      const named = meta.services.flatMap((id) => registry.get(id) ?? []);
+      return buildPrompt(
         {
           ...meta,
           id: `remark-prompt-${count++}`,
           value,
-          services: meta.services.length ? meta.services : defaults,
+          services: named.length ? named : defaults,
         },
         labels,
       );
+    };
 
     return {
       fence(node) {
