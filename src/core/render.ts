@@ -1,7 +1,7 @@
 import type { RootContent, Text } from "mdast";
 import { classes, type PromptElement } from "./contract.js";
 import { parsePreview } from "./preview.js";
-import { services } from "./services.js";
+import type { ResolvedService } from "./services.js";
 import type { PromptMeta } from "./syntax.js";
 
 export interface Labels {
@@ -28,10 +28,49 @@ const el = (
 
 const text = (value: string): Text => ({ type: "text", value });
 
-export interface PromptInput extends PromptMeta {
+export interface PromptInput extends Omit<PromptMeta, "services"> {
   id: string;
   value: string;
+  services: readonly ResolvedService[];
 }
+
+/** The "Open in …" control: a form, a link, or a copy-and-open button. */
+const serviceAction = (
+  { label, action }: ResolvedService,
+  value: string,
+  labels: Labels,
+): PromptElement => {
+  const name = { ariaLabel: labels.open.replace("{service}", label) };
+  const className = [classes.service];
+  if (action.kind === "form")
+    return el(
+      "form",
+      { className, action: action.action, method: "get", target: "_blank" },
+      [
+        ...action.fields.map(([field, fixed]) =>
+          el("input", { type: "hidden", name: field, value: fixed ?? value }),
+        ),
+        el("button", { type: "submit", ...name }, [text(label)]),
+      ],
+    );
+  if (action.kind === "link")
+    return el(
+      "a",
+      {
+        className,
+        href: `${action.before}${encodeURIComponent(value)}${action.after}`,
+        target: "_blank",
+        rel: ["noopener", "noreferrer"],
+        ...name,
+      },
+      [text(label)],
+    );
+  return el(
+    "button",
+    { type: "button", className, dataOpenUrl: action.url, ...name },
+    [text(label)],
+  );
+};
 
 /** Build the prompt block as mdast nodes carrying element hints. */
 export const buildPrompt = (
@@ -83,29 +122,7 @@ export const buildPrompt = (
       el("button", { type: "button", className: [classes.copy] }, [
         text(labels.copy),
       ]),
-      ...offered.map((key) => {
-        const service = services[key];
-        return el(
-          "form",
-          {
-            className: [classes.service],
-            action: service.action,
-            method: "get",
-            target: "_blank",
-          },
-          [
-            el("input", { type: "hidden", name: service.field, value }),
-            el(
-              "button",
-              {
-                type: "submit",
-                ariaLabel: labels.open.replace("{service}", service.label),
-              },
-              [text(service.label)],
-            ),
-          ],
-        );
-      }),
+      ...offered.map((service) => serviceAction(service, value, labels)),
     ]),
   ]);
 };

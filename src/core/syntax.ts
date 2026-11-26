@@ -1,10 +1,10 @@
 import type { Node } from "mdast";
-import { isService, type ServiceId } from "./services.js";
 
 export interface PromptMeta {
   title?: string;
   open: boolean;
-  services: ServiceId[];
+  /** Words that may name services; the transform keeps the ones it knows. */
+  services: string[];
 }
 
 const titlePattern = /title=(?:"([^"]*)"|'([^']*)'|(\S+))/;
@@ -16,7 +16,7 @@ export const parseMeta = (meta: string): PromptMeta => {
   return {
     title: title ? (title[1] ?? title[2] ?? title[3]) : undefined,
     open: words.includes("open"),
-    services: words.filter(isService),
+    services: words.filter((word) => word !== "open"),
   };
 };
 
@@ -49,6 +49,8 @@ export const readDirective = <Child extends Node>(
       start === undefined || end === undefined ? "" : source.slice(start, end),
     title: title ?? (label ? labelText(label) : undefined),
     open: "open" in attributes,
-    services: Object.keys(attributes).filter(isService),
+    services: Object.keys(attributes).filter(
+      (name) => name !== "open" && name !== "title",
+    ),
   };
 };

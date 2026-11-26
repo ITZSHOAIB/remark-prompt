@@ -11,14 +11,17 @@ declare global {
 if (typeof document !== "undefined" && !window.__remarkPrompt) {
   window.__remarkPrompt = true;
   document.addEventListener("click", async (event) => {
-    const button =
-      event.target instanceof Element &&
-      event.target.closest(selector(classes.copy));
+    const target = event.target instanceof Element ? event.target : null;
+    const opener = target?.closest(`[${attributes.openUrl}]`);
+    const button = opener ?? target?.closest(selector(classes.copy));
     if (!button) return;
     const value = button
       .closest(selector(classes.root))
       ?.getAttribute(attributes.prompt);
     if (value == null) return;
+    // Open first: a window opened after the clipboard await loses the click.
+    const url = opener?.getAttribute(attributes.openUrl);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
     try {
       await navigator.clipboard.writeText(value);
       button.setAttribute(attributes.copied, "");

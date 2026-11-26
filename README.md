@@ -31,7 +31,7 @@ Use a `prompt` fence. Everything on the fence line after `prompt` is optional:
 | --- | --- |
 | `title="…"` | Summary text. Defaults to "Prompt". |
 | `open` | Starts expanded. |
-| `claude` `chatgpt` `cursor` | The "Open in" buttons to show. Defaults to the `services` option. |
+| a service id, such as `claude` or `gemini` | The "Open in" buttons to show. See [Services](#services). Defaults to the `services` option. |
 
 ### `:::prompt` directives
 
@@ -180,11 +180,61 @@ const html = await unified()
   .process(markdown);
 ```
 
+## Services
+
+The ids match [Mirrordown](https://github.com/mirrordown/mirrordown)'s, so existing fences keep working. List the ones you want on the fence line, or set defaults with the `services` option. Unknown ids are ignored.
+
+| Id | Button | What it does |
+| --- | --- | --- |
+| `claude` | Claude | Opens `claude.ai/new` with the prompt filled in; the reader sends it |
+| `chatgpt` | ChatGPT | Opens ChatGPT with the prompt filled in; the reader sends it |
+| `cursor` | Cursor | Opens `cursor.com/link/prompt` with the prompt filled in |
+| `github-copilot` | GitHub Copilot | Opens Copilot with the prompt filled in; the reader sends it |
+| `grok` | Grok | Opens Grok with the prompt filled in; the reader confirms before it sends |
+| `copilot` | Microsoft Copilot | Copies the prompt, then opens Copilot |
+| `gemini` | Gemini | Copies the prompt, then opens Gemini |
+| `mistral` | Le Chat | Copies the prompt, then opens Le Chat |
+| `perplexity` | Perplexity | Copies the prompt, then opens Perplexity |
+
+The last four can't take a prompt in the link, so their button copies it and opens the service. That needs the [client script](#setup), as Copy does.
+
+### Custom services
+
+`customServices` adds a service, or replaces a preset with the same id. Write the service's link as a template and put `{prompt}` where the prompt goes:
+
+```ts
+remarkPrompt({
+  customServices: {
+    // A query value becomes a GET form. Other parameters are kept.
+    kagi: { label: "Kagi", url: "https://kagi.com/assistant?q={prompt}&internet=true" },
+    // The path or the fragment becomes a link with the prompt URL-encoded.
+    lovable: { label: "Lovable", url: "https://lovable.dev/#prompt={prompt}" },
+    // No `{prompt}`: copy the prompt, then open the page.
+    local: { label: "Team chat", url: "https://chat.example.com/" },
+    // Replace a preset.
+    claude: { label: "Claude", url: "https://claude.ai/new?q={prompt}" },
+  },
+});
+```
+
+````md
+```prompt kagi lovable
+Explain this page.
+```
+````
+
+- `url` must be `http` or `https`, with at most one `{prompt}`, and not in the host.
+- In a query, `{prompt}` must be a whole value (`?q={prompt}`), not part of one (`?q=ask-{prompt}`).
+- Ids use letters, digits, `-` and `_`. `open` and `title` are reserved for the fence.
+- `maxLength?: number` is accepted and stored for the upcoming length limits.
+- A bad template fails the build and names the service.
+
 ## Options
 
 ```ts
 remarkPrompt({
   services: ["claude", "chatgpt"], // default "Open in" buttons
+  customServices: {}, // add services or replace presets; see Services
   labels: {
     title: "Prompt",
     preview: "Preview",
@@ -203,7 +253,7 @@ Everything is namespaced under `.remark-prompt`. The bundled stylesheet is small
 
 - `.remark-prompt-details` and `.remark-prompt-title`
 - `.remark-prompt-views`, `.remark-prompt-preview`, `.remark-prompt-source`
-- `.remark-prompt-actions`, `.remark-prompt-copy` (`[data-copied]` for two seconds after a copy), `.remark-prompt-service`
+- `.remark-prompt-actions`, `.remark-prompt-copy` (`[data-copied]` for two seconds after a copy), `.remark-prompt-service` (a form, a link, or a button, by service)
 
 The text is stored once, in the `data-prompt` attribute on `.remark-prompt`.
 

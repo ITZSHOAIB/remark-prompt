@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { classes, hookClasses, styledClasses } from "../src/core/contract.js";
+import type { RemarkPromptOptions } from "../src/index.js";
 import { pretty, remarkHtml, satteriHtml } from "./helpers.js";
 
 const css = readFileSync(new URL("../src/styles.css", import.meta.url), "utf8");
@@ -27,18 +28,39 @@ const cases = {
   ].join("\n"),
 };
 
+// The three service controls: a form with extra fields, an anchor, and a
+// copy-and-open button.
+const serviceOptions: RemarkPromptOptions = {
+  customServices: {
+    form: { label: "Form", url: "https://form.test/c?m=a&q={prompt}&t=1&t=2" },
+    link: { label: "Link", url: "https://link.test/#prompt={prompt}" },
+  },
+};
+const withOptions: Record<string, RemarkPromptOptions> = {
+  "service-kinds": serviceOptions,
+};
+const allCases: Record<string, string> = {
+  ...cases,
+  "service-kinds": [
+    "```prompt form link gemini",
+    "Plan & ship #1.",
+    "```",
+    "",
+  ].join("\n"),
+};
+
 describe("HTML contract", () => {
-  for (const [name, markdown] of Object.entries(cases)) {
+  for (const [name, markdown] of Object.entries(allCases)) {
     it(`remark output for ${name} is pinned`, async () => {
-      await expect(pretty(await remarkHtml(markdown))).toMatchFileSnapshot(
-        `__snapshots__/remark-${name}.html`,
-      );
+      await expect(
+        pretty(await remarkHtml(markdown, withOptions[name])),
+      ).toMatchFileSnapshot(`__snapshots__/remark-${name}.html`);
     });
 
     it(`Sätteri output for ${name} is pinned`, async () => {
-      await expect(pretty(satteriHtml(markdown))).toMatchFileSnapshot(
-        `__snapshots__/satteri-${name}.html`,
-      );
+      await expect(
+        pretty(satteriHtml(markdown, withOptions[name])),
+      ).toMatchFileSnapshot(`__snapshots__/satteri-${name}.html`);
     });
   }
 
